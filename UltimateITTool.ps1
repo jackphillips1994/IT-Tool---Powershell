@@ -1,15 +1,16 @@
+Import-Module ActiveDirectory
+
 ﻿#The following section is used to test whether a single workstation/notebook or a list of workstations/notebooks are up.
 
-
 Function Ping-Test {
-	$ComputerStatus = Test-Connection -Count 1 -ComputerName $Computer -Quiet 
+	$ComputerStatus = Test-Connection -Count 1 -ComputerName $Computer -Quiet
 	if ($ComputerStatus) {
-		Write-Host -ForegroundColor Green "$Computer is turned on" 
+		Write-Host -ForegroundColor Green "$Computer is turned on"
 		Display-IPAddress
 		Display-WorkstationInfo $Computer
 		Display-LoggedOnUser $Computer
 	}
-	Else { 
+	Else {
 		Write-Host -ForegroundColor Red "$Computer is down"
 		}
 }
@@ -68,17 +69,76 @@ Function Ping-Tool {
 
 #The following section is the user administration tool
 
-
+#TODO complete User admin tool once all user Admin functions are complete
 Function User-Admin-Tool {
-	
+
+
+}
+#TODO complete Serach tool
+Function User-Search-Tool {
+
 }
 
+#TODO Test that this function works
+Function Reset-Password ($Username) {
+	$New = Read-host "Enter the new password" -AsSecureString
+	Set-ADAccountPassword $Username -NewPassword $New
+	$Option = Read-Host "Would you like the user to change the password on logon?"
+	#TODO insert yes or no function
+	If ($Option.Lower() -eq "yes") {
+		Set-ADUser $Username -ChangePasswordAtLogon $true
+	}
+	Elseif ($Option.lower() -eq "no") {
+		break
+	}
+	Else {While ($Option.ToLower() -ne "yes" -Or $Option.lower() -ne "no") {
+		$Option = Read-Host "Please enter yes or no"
+		}
+	}
+}
+
+#TODO complete enableing user Function
+Function Enable-User ($Username)  {
+	$Option = Read-Host "Would you like to enable this user: $Username ?"
+	If ($Option.Lower() -eq "yes") {
+		Enable-ADAccount $Username
+	}
+	Else {
+		Write-Host
+	}
+	Write-Host "Returning to User Admin Section"
+	User-Admin-Tool
+}
+
+
+#TODO complete disabling user Function
+Function Disable-User ($Username) {
+	$Option = Read-Host "Would you like to disable this user: $Username ?"
+	If ($option.lower() -eq "yes") {
+		Disable-ADAccount $Username
+	}
+	Else {
+		Write-Host "Returning to User Admin Section"
+		User-Admin-Tool
+	}
+	Write-Host "Account $Username has been disabled, returing to User Admin Tool"
+	User-Admin-Tool
+}
+
+
+#TODO complete password age Function
+Function Password-Age ($Username) {
+
+}
+
+
 #The following section is the main menu
+#TODO complete the main menu section once all sections are complete
 $Menu = $true
 
 While ($Menu) {
 
-	Write-Host "Welcome to the Ultimate IT Tool, please select from the following menu:"
+	Write-Host "Welcome to the Ultimate IT Tool, please select from the following menu"
 	Write-Host "1)Ping and Hostname Tool"
 	Write-Host "2)User Administration Tool"
 	Write-Host "8)To exit"
@@ -89,9 +149,25 @@ While ($Menu) {
 		Ping-Tool
 	}
 	ElseIf ($MenuOptin -eq 2) {
+		Write-Host "Welcome to the User Administration Section"
 		User-Admin-Tool
 	}
 	ElseIf ($MenuOption -eq 8) {
 		break
+	}
+}
+
+
+#Random Functions
+#TODO Complete yes or no option function to be placed in other functions
+Function Yes-No-Loop ($Choice) {
+	while ($Choice -ne "yes" -Or $Choice -ne "no") {
+		$Choice = Read-Host "Please enter in yes or no"
+	}
+	If ($Choice.Lower() -eq "yes") {
+		return $true
+	}
+	Elseif ($Choice.Lower() -eq "no") {
+		return $false
 	}
 }
