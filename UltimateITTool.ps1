@@ -35,7 +35,7 @@ Function Display-WorkstationInfo ($HostName) {
 
 
 Function Display-LoggedOnUser ($HostName) {
-	$CurrentUser = gwmi win32_computersystem -Computer $HostName | Select Username
+	$CurrentUser = gwmi win32_computersystem -ComputerName $HostName | Select Username
 	Write-Host -ForegroundColor Green "Current User: $CurrentUser"
 }
 
@@ -70,13 +70,16 @@ Function Ping-Tool {
 #The following section is the user administration tool
 
 #TODO complete User admin tool once all user Admin functions are complete
+#TODO start menu to make function testing possible
 Function User-Admin-Tool {
-
+	User-Search-Tool
 
 }
-#TODO complete Serach tool
+#TODO complete Search tool
 Function User-Search-Tool {
-
+	$InputUsername = Read-Host "Please enter the name of the user you wish to find (first name then last name or username)"
+	$FirstName,$Surname,$Username = $Username.Split(' ')
+	Get-ADUser -Filter {((Surname -like $Surname) -and (Givename -like $FirstName)) -or (SamAccountName -eq $UserName)}
 }
 
 #TODO Test that this function works
@@ -155,10 +158,13 @@ While ($Menu) {
 	ElseIf ($MenuOption -eq 8) {
 		break
 	}
+	Else {
+		Write-Host "Please enter a vaild option"
+	}
 }
 
 
-#Random Functions
+#Admin Functions
 #TODO Complete yes or no option function to be placed in other functions
 Function Yes-No-Loop ($Choice) {
 	while ($Choice -ne "yes" -Or $Choice -ne "no") {
